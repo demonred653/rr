@@ -38,7 +38,7 @@ function draw() {
     }
     ctx.closePath();
     ctx.lineWidth = 4; // thickness of the line (~2 cm on screen)
-    ctx.strokeStyle = `hsl(${(t*50)%360}, 100%, 50%)`;
+    ctx.strokeStyle = '#ff0055'; // solid pink/red
     ctx.stroke();
 
     requestAnimationFrame(draw);
