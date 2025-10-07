@@ -49,3 +49,71 @@ draw();
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hollow Wavy Ball with Logo</title>
+<style>
+  body { margin: 0; background: #011112; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Make canvas full screen
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+let t = 0;
+const centerX = canvas.width/2;
+const centerY = canvas.height/2;
+const radius = 100;
+
+// Load logo
+const logo = new Image();
+logo.src = 'logo.png'; // put your logo in the same folder
+logo.onload = () => {
+    requestAnimationFrame(draw);
+};
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t += 0.05;
+
+    // --- Wavy hollow ball ---
+    ctx.beginPath();
+    const points = 100;
+    for (let i = 0; i <= points; i++) {
+        const angle = (i / points) * Math.PI * 2;
+        const r = radius + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
+        const x = canvas.width / 2 + r * Math.cos(angle);
+        const y = canvas.height / 2 + r * Math.sin(angle);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.lineWidth = 4; // thickness of the outline
+    ctx.strokeStyle = '064040'; // solid pink/red
+    ctx.stroke();
+
+    // --- Logo and Name ---
+    ctx.drawImage(logo, 20, 20, 50, 50); // x, y, width, height
+    ctx.font = '24px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText('YourName', 80, 55);
+
+    requestAnimationFrame(draw);
+}
+
+</script>
+</body>
+</html>
