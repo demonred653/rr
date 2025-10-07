@@ -2,15 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dancing Ball</title>
+<title>Wavy Dancing Ball</title>
 <style>
   body {
     margin: 0;
     overflow: hidden;
     background: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
   }
   #ball {
@@ -19,6 +16,9 @@
     background: #ff0055;
     border-radius: 50%;
     position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 </style>
 </head>
@@ -26,22 +26,19 @@
 <div id="ball"></div>
 <script>
 const ball = document.getElementById("ball");
-let angle = 0;
-const radius = 100; // distance from center
-const centerX = window.innerWidth / 2;
-const centerY = window.innerHeight / 2;
+let t = 0;
 
-function moveBall() {
-    angle += 0.05; // speed
-    const x = centerX + radius * Math.cos(angle * 3) * Math.sin(angle);
-    const y = centerY + radius * Math.sin(angle * 2) * Math.cos(angle);
+function animate() {
+    t += 0.02;
+    const x = window.innerWidth / 2 + 150 * Math.sin(t) * Math.cos(t/2);
+    const y = window.innerHeight / 2 + 120 * Math.sin(t/1.5) * Math.cos(t/3);
     ball.style.left = x + "px";
     ball.style.top = y + "px";
-    ball.style.background = `hsl(${angle*50 % 360}, 100%, 50%)`;
-    requestAnimationFrame(moveBall);
+    ball.style.background = `hsl(${t*80 % 360}, 100%, 50%)`;
+    requestAnimationFrame(animate);
 }
 
-moveBall();
+animate();
 </script>
 </body>
 </html>
