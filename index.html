@@ -2,43 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Random Moving Shape</title>
+<title>Dancing Ball</title>
 <style>
   body {
     margin: 0;
     overflow: hidden;
     background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
   }
-  #shape {
+  #ball {
     width: 50px;
     height: 50px;
     background: #ff0055;
     border-radius: 50%;
     position: absolute;
-    top: 0;
-    left: 0;
   }
 </style>
 </head>
 <body>
-<div id="shape"></div>
+<div id="ball"></div>
 <script>
-  const shape = document.getElementById("shape");
+const ball = document.getElementById("ball");
+let angle = 0;
+const radius = 100; // distance from center
+const centerX = window.innerWidth / 2;
+const centerY = window.innerHeight / 2;
 
-  function moveShape() {
-    const maxX = window.innerWidth - 50;
-    const maxY = window.innerHeight - 50;
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
-    const newColor = `hsl(${Math.random()*360}, 100%, 50%)`;
+function moveBall() {
+    angle += 0.05; // speed
+    const x = centerX + radius * Math.cos(angle * 3) * Math.sin(angle);
+    const y = centerY + radius * Math.sin(angle * 2) * Math.cos(angle);
+    ball.style.left = x + "px";
+    ball.style.top = y + "px";
+    ball.style.background = `hsl(${angle*50 % 360}, 100%, 50%)`;
+    requestAnimationFrame(moveBall);
+}
 
-    shape.style.transition = "all 0.8s ease";
-    shape.style.left = newX + "px";
-    shape.style.top = newY + "px";
-    shape.style.background = newColor;
-  }
-
-  setInterval(moveShape, 1000);
+moveBall();
 </script>
 </body>
 </html>
