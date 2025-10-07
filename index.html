@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Wavy Surface Ball</title>
+<title>Hollow Wavy Ball</title>
 <style>
   body { margin: 0; background: #111; overflow: hidden; }
   canvas { display: block; }
@@ -37,8 +37,9 @@ function draw() {
         else ctx.lineTo(x,y);
     }
     ctx.closePath();
-    ctx.fillStyle = `hsl(${(t*50)%360}, 100%, 50%)`;
-    ctx.fill();
+    ctx.lineWidth = 4; // thickness of the line (~2 cm on screen)
+    ctx.strokeStyle = `hsl(${(t*50)%360}, 100%, 50%)`;
+    ctx.stroke();
 
     requestAnimationFrame(draw);
 }
@@ -47,3 +48,4 @@ draw();
 </script>
 </body>
 </html>
+
