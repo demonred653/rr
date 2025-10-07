@@ -1,44 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Wavy Dancing Ball</title>
-<style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background: #111;
-    height: 100vh;
-  }
-  #ball {
-    width: 50px;
-    height: 50px;
-    background: #ff0055;
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wavy Floating Ball</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #ball {
+      width: 50px;
+      height: 50px;
+      background: #ff0055;
+      border-radius: 50%;
+      position: absolute;
+    }
+  </style>
 </head>
 <body>
-<div id="ball"></div>
-<script>
-const ball = document.getElementById("ball");
-let t = 0;
+  <div id="ball"></div>
+  <script>
+    const ball = document.getElementById("ball");
+    let t = 0;
 
-function animate() {
-    t += 0.02;
-    const x = window.innerWidth / 2 + 150 * Math.sin(t) * Math.cos(t/2);
-    const y = window.innerHeight / 2 + 120 * Math.sin(t/1.5) * Math.cos(t/3);
-    ball.style.left = x + "px";
-    ball.style.top = y + "px";
-    ball.style.background = `hsl(${t*80 % 360}, 100%, 50%)`;
-    requestAnimationFrame(animate);
-}
+    function animate() {
+      t += 0.02;
+      const x = window.innerWidth / 2 + 150 * Math.sin(t);
+      const y = window.innerHeight / 2 + 100 * Math.cos(t);
+      ball.style.left = `${x}px`;
+      ball.style.top = `${y}px`;
+      ball.style.background = `hsl(${t * 100 % 360}, 100%, 50%)`;
+      requestAnimationFrame(animate);
+    }
 
-animate();
-</script>
+    animate();
+  </script>
 </body>
 </html>
