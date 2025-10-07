@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Random Moving Shape</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+  }
+  #shape {
+    width: 50px;
+    height: 50px;
+    background: #ff0055;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+</style>
+</head>
+<body>
+<div id="shape"></div>
+<script>
+  const shape = document.getElementById("shape");
+
+  function moveShape() {
+    const maxX = window.innerWidth - 50;
+    const maxY = window.innerHeight - 50;
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+    const newColor = `hsl(${Math.random()*360}, 100%, 50%)`;
+
+    shape.style.transition = "all 0.8s ease";
+    shape.style.left = newX + "px";
+    shape.style.top = newY + "px";
+    shape.style.background = newColor;
+  }
+
+  setInterval(moveShape, 1000);
+</script>
+</body>
+</html>
+
