@@ -1,11 +1,15 @@
-ho<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="logo.png">
-<title>Echo works</title>
+<title>Echo Works</title>
 <style>
-  body { margin: 0; background: #011112; overflow: hidden; }
+  body { 
+    margin: 0; 
+    background: #011112; 
+    overflow: hidden; 
+  }
   canvas { display: block; }
 </style>
 </head>
@@ -24,13 +28,12 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 let t = 0;
-const centerX = canvas.width/2;
-const centerY = canvas.height/2;
-const radius = 100;
+let pulse = 0;
+const baseRadius = 100;
 
 // Load logo
 const logo = new Image();
-logo.src = 'logo.png'; // put your logo in the same folder
+logo.src = 'logo.png'; // your logo in same folder
 logo.onload = () => {
     requestAnimationFrame(draw);
 };
@@ -39,31 +42,37 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     t += 0.05;
 
+    // --- Fake "bass pulse" effect ---
+    pulse = Math.sin(t * 2) * 10; // expands/shrinks smoothly
+
     // --- Wavy hollow ball ---
     ctx.beginPath();
-    const points = 100;
+    const points = 120;
     for (let i = 0; i <= points; i++) {
         const angle = (i / points) * Math.PI * 2;
-        const r = radius + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
+        const r = baseRadius + pulse + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
         const x = canvas.width / 2 + r * Math.cos(angle);
         const y = canvas.height / 2 + r * Math.sin(angle);
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.lineWidth = 4; // thickness of the outline
-    ctx.strokeStyle = '064040'; // solid pink/red
+
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#064040';
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = '#064040';
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
     // --- Logo and Name ---
-    ctx.drawImage(logo, 20, 20, 50, 50); // x, y, width, height
+    ctx.drawImage(logo, 20, 20, 50, 50); // top-left logo
     ctx.font = '24px Arial';
     ctx.fillStyle = 'white';
-    ctx.fillText('Echo works', 80, 55);
+    ctx.fillText('Echo Works', 80, 55);
 
     requestAnimationFrame(draw);
 }
-
 </script>
 </body>
 </html>
