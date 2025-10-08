@@ -15,7 +15,6 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// Full screen canvas
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -25,13 +24,20 @@ resizeCanvas();
 
 let t = 0;
 let radius = 100;
-let targetX = canvas.width / 2;
-let targetY = canvas.height / 2;
-let ballX = targetX;
-let ballY = targetY;
+let ballX = canvas.width / 2;
+let ballY = canvas.height / 2;
+let targetX = ballX;
+let targetY = ballY;
+let firstMove = true;
 
-// Mouse move detection
+// Mouse movement
 window.addEventListener('mousemove', e => {
+  if (firstMove) {
+    // Start directly at mouse to avoid jump
+    ballX = e.clientX;
+    ballY = e.clientY;
+    firstMove = false;
+  }
   targetX = e.clientX;
   targetY = e.clientY;
 });
@@ -45,11 +51,11 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   t += 0.04;
 
-  // Smooth movement (lerp)
+  // Smooth movement
   ballX += (targetX - ballX) * 0.05;
   ballY += (targetY - ballY) * 0.05;
 
-  // --- Wavy hollow glowing ball ---
+  // Wavy hollow glowing ball
   ctx.save();
   ctx.translate(ballX, ballY);
   ctx.beginPath();
@@ -64,7 +70,7 @@ function draw() {
   }
   ctx.closePath();
 
-  // Glow effect
+  // Glow
   ctx.shadowColor = '#00ffcc';
   ctx.shadowBlur = 25;
   ctx.strokeStyle = '#00ffcc';
@@ -72,7 +78,7 @@ function draw() {
   ctx.stroke();
   ctx.restore();
 
-  // --- Logo and Name ---
+  // Logo + Text
   ctx.shadowColor = 'transparent';
   ctx.drawImage(logo, 20, 20, 50, 50);
   ctx.font = '24px Arial';
