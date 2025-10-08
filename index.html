@@ -5,12 +5,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <title>Echo Works</title>
 <style>
-  body {
-    margin: 0;
-    background: #011112;
-    overflow: hidden;
-    cursor: crosshair;
-  }
+  body { margin: 0; background: #011112; overflow: hidden; }
   canvas { display: block; }
 </style>
 </head>
@@ -20,6 +15,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+// Full screen canvas
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -28,74 +24,56 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 let t = 0;
-let pulse = 0;
-const baseRadius = 100;
-let mouseX = canvas.width / 2;
-let mouseY = canvas.height / 2;
-let energy = 0;
+let radius = 100;
+let targetX = canvas.width / 2;
+let targetY = canvas.height / 2;
+let ballX = targetX;
+let ballY = targetY;
 
-// track mouse
-canvas.addEventListener('mousemove', e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+// Mouse move detection
+window.addEventListener('mousemove', e => {
+  targetX = e.clientX;
+  targetY = e.clientY;
 });
 
+// Load logo
 const logo = new Image();
 logo.src = 'logo.png';
-logo.onload = () => {
-  requestAnimationFrame(draw);
-};
+logo.onload = () => requestAnimationFrame(draw);
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  t += 0.05;
+  t += 0.04;
 
-  // distance + smooth energy
-  const dx = mouseX - canvas.width / 2;
-  const dy = mouseY - canvas.height / 2;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  const maxDist = Math.min(canvas.width, canvas.height) / 2;
+  // Smooth movement (lerp)
+  ballX += (targetX - ballX) * 0.05;
+  ballY += (targetY - ballY) * 0.05;
 
-  // base idle shimmer so it’s never 100% still
-  const targetEnergy = Math.max(0.05, 1 - dist / maxDist);
-  energy += (targetEnergy - energy) * 0.05; // slower, smoother transition
-
-  // smoother pulse & animation
-  pulse = Math.sin(t * (1.8 + energy * 2)) * (10 + energy * 15);
-
-  // wavy circle path
+  // --- Wavy hollow glowing ball ---
+  ctx.save();
+  ctx.translate(ballX, ballY);
   ctx.beginPath();
-  const points = 150;
+  const points = 120;
   for (let i = 0; i <= points; i++) {
     const angle = (i / points) * Math.PI * 2;
-    const r = baseRadius + pulse + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
-    const x = canvas.width / 2 + r * Math.cos(angle);
-    const y = canvas.height / 2 + r * Math.sin(angle);
+    const r = radius + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
+    const x = r * Math.cos(angle);
+    const y = r * Math.sin(angle);
     if (i === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
   ctx.closePath();
 
-  // dynamic glow
-  const glowStrength = 50 + energy * 80;
-  const color = `hsl(${170 - energy * 70}, 100%, ${45 + energy * 30}%)`;
-
-  // outer aura
-  ctx.lineWidth = 12;
-  ctx.strokeStyle = `rgba(0,255,200,${0.15 + energy * 0.4})`;
-  ctx.shadowBlur = glowStrength;
-  ctx.shadowColor = color;
+  // Glow effect
+  ctx.shadowColor = '#00ffcc';
+  ctx.shadowBlur = 25;
+  ctx.strokeStyle = '#00ffcc';
+  ctx.lineWidth = 4;
   ctx.stroke();
+  ctx.restore();
 
-  // inner core
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = color;
-  ctx.shadowBlur = glowStrength / 2;
-  ctx.shadowColor = color;
-  ctx.stroke();
-
-  // logo + text
-  ctx.shadowBlur = 0;
+  // --- Logo and Name ---
+  ctx.shadowColor = 'transparent';
   ctx.drawImage(logo, 20, 20, 50, 50);
   ctx.font = '24px Arial';
   ctx.fillStyle = 'white';
