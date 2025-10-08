@@ -30,10 +30,11 @@ resizeCanvas();
 let t = 0;
 let pulse = 0;
 const baseRadius = 100;
-let mouseX = 0, mouseY = 0;
-let energy = 0; // energy from mouse proximity
+let mouseX = canvas.width / 2;
+let mouseY = canvas.height / 2;
+let energy = 0;
 
-// --- Track mouse ---
+// track mouse
 canvas.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
@@ -49,20 +50,20 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   t += 0.05;
 
-  // Distance from mouse to center
+  // distance + smooth energy
   const dx = mouseX - canvas.width / 2;
   const dy = mouseY - canvas.height / 2;
   const dist = Math.sqrt(dx * dx + dy * dy);
-
-  // --- Energy increases when mouse is near center ---
   const maxDist = Math.min(canvas.width, canvas.height) / 2;
-  const targetEnergy = Math.max(0, 1 - dist / maxDist);
-  energy += (targetEnergy - energy) * 0.1; // smooth transition
 
-  // Pulse faster & stronger with energy
-  pulse = Math.sin(t * (2 + energy * 3)) * (10 + energy * 10);
+  // base idle shimmer so it’s never 100% still
+  const targetEnergy = Math.max(0.05, 1 - dist / maxDist);
+  energy += (targetEnergy - energy) * 0.05; // slower, smoother transition
 
-  // --- Wavy hollow circle path ---
+  // smoother pulse & animation
+  pulse = Math.sin(t * (1.8 + energy * 2)) * (10 + energy * 15);
+
+  // wavy circle path
   ctx.beginPath();
   const points = 150;
   for (let i = 0; i <= points; i++) {
@@ -75,25 +76,25 @@ function draw() {
   }
   ctx.closePath();
 
-  // --- Glow intensity depends on energy ---
-  const glowStrength = 50 + energy * 100;
-  const color = `hsl(${170 - energy * 70}, 100%, ${50 + energy * 20}%)`;
+  // dynamic glow
+  const glowStrength = 50 + energy * 80;
+  const color = `hsl(${170 - energy * 70}, 100%, ${45 + energy * 30}%)`;
 
-  // Outer aura
+  // outer aura
   ctx.lineWidth = 12;
-  ctx.strokeStyle = `rgba(0,255,200,${0.2 + energy * 0.5})`;
+  ctx.strokeStyle = `rgba(0,255,200,${0.15 + energy * 0.4})`;
   ctx.shadowBlur = glowStrength;
   ctx.shadowColor = color;
   ctx.stroke();
 
-  // Inner bright core
+  // inner core
   ctx.lineWidth = 3;
   ctx.strokeStyle = color;
   ctx.shadowBlur = glowStrength / 2;
   ctx.shadowColor = color;
   ctx.stroke();
 
-  // --- Logo and text ---
+  // logo + text
   ctx.shadowBlur = 0;
   ctx.drawImage(logo, 20, 20, 50, 50);
   ctx.font = '24px Arial';
