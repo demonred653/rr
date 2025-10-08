@@ -19,7 +19,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// Make canvas full screen
+// Fullscreen
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -33,7 +33,58 @@ const baseRadius = 100;
 
 // Load logo
 const logo = new Image();
-logo.src = 'logo.png'; // your logo in same folder
+logo.src = 'logo.png'; // same folder
+logo.onload = () => {
+  requestAnimationFrame(draw);
+};
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  t += 0.05;
+
+  // Pulse effect (fake music beat)
+  pulse = Math.sin(t * 2) * 10;
+
+  // --- Path of wavy hollow circle ---
+  ctx.beginPath();
+  const points = 150;
+  for (let i = 0; i <= points; i++) {
+    const angle = (i / points) * Math.PI * 2;
+    const r = baseRadius + pulse + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
+    const x = canvas.width / 2 + r * Math.cos(angle);
+    const y = canvas.height / 2 + r * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+
+  // --- BIG NEON GLOW ---
+  // Outer aura (wide and soft)
+  ctx.lineWidth = 12;
+  ctx.strokeStyle = 'rgba(0, 255, 200, 0.3)';
+  ctx.shadowBlur = 80;
+  ctx.shadowColor = '#00fff6';
+  ctx.stroke();
+
+  // Inner bright core
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#00fff6';
+  ctx.shadowBlur = 25;
+  ctx.shadowColor = '#00fff6';
+  ctx.stroke();
+
+  // --- Logo and name ---
+  ctx.shadowBlur = 0;
+  ctx.drawImage(logo, 20, 20, 50, 50);
+  ctx.font = '24px Arial';
+  ctx.fillStyle = 'white';
+  ctx.fillText('Echo Works', 80, 55);
+
+  requestAnimationFrame(draw);
+}
+</script>
+</body>
+</html>
 logo.onload = () => {
     requestAnimationFrame(draw);
 };
