@@ -5,10 +5,11 @@
 <link rel="icon" type="image/png" href="logo.png">
 <title>Echo Works</title>
 <style>
-  body { 
-    margin: 0; 
-    background: #011112; 
-    overflow: hidden; 
+  body {
+    margin: 0;
+    background: #011112;
+    overflow: hidden;
+    cursor: crosshair;
   }
   canvas { display: block; }
 </style>
@@ -19,7 +20,6 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// Fullscreen
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -30,10 +30,17 @@ resizeCanvas();
 let t = 0;
 let pulse = 0;
 const baseRadius = 100;
+let mouseX = 0, mouseY = 0;
+let energy = 0; // energy from mouse proximity
 
-// Load logo
+// --- Track mouse ---
+canvas.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
 const logo = new Image();
-logo.src = 'logo.png'; // same folder
+logo.src = 'logo.png';
 logo.onload = () => {
   requestAnimationFrame(draw);
 };
@@ -42,10 +49,20 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   t += 0.05;
 
-  // Pulse effect (fake music beat)
-  pulse = Math.sin(t * 2) * 10;
+  // Distance from mouse to center
+  const dx = mouseX - canvas.width / 2;
+  const dy = mouseY - canvas.height / 2;
+  const dist = Math.sqrt(dx * dx + dy * dy);
 
-  // --- Path of wavy hollow circle ---
+  // --- Energy increases when mouse is near center ---
+  const maxDist = Math.min(canvas.width, canvas.height) / 2;
+  const targetEnergy = Math.max(0, 1 - dist / maxDist);
+  energy += (targetEnergy - energy) * 0.1; // smooth transition
+
+  // Pulse faster & stronger with energy
+  pulse = Math.sin(t * (2 + energy * 3)) * (10 + energy * 10);
+
+  // --- Wavy hollow circle path ---
   ctx.beginPath();
   const points = 150;
   for (let i = 0; i <= points; i++) {
@@ -58,71 +75,32 @@ function draw() {
   }
   ctx.closePath();
 
-  // --- BIG NEON GLOW ---
-  // Outer aura (wide and soft)
+  // --- Glow intensity depends on energy ---
+  const glowStrength = 50 + energy * 100;
+  const color = `hsl(${170 - energy * 70}, 100%, ${50 + energy * 20}%)`;
+
+  // Outer aura
   ctx.lineWidth = 12;
-  ctx.strokeStyle = 'rgba(0, 255, 200, 0.3)';
-  ctx.shadowBlur = 80;
-  ctx.shadowColor = '#00fff6';
+  ctx.strokeStyle = `rgba(0,255,200,${0.2 + energy * 0.5})`;
+  ctx.shadowBlur = glowStrength;
+  ctx.shadowColor = color;
   ctx.stroke();
 
   // Inner bright core
   ctx.lineWidth = 3;
-  ctx.strokeStyle = '#00fff6';
-  ctx.shadowBlur = 25;
-  ctx.shadowColor = '#00fff6';
+  ctx.strokeStyle = color;
+  ctx.shadowBlur = glowStrength / 2;
+  ctx.shadowColor = color;
   ctx.stroke();
 
-  // --- Logo and name ---
+  // --- Logo and text ---
   ctx.shadowBlur = 0;
   ctx.drawImage(logo, 20, 20, 50, 50);
-  ctx.font = '24px  Arial;';
+  ctx.font = '24px Arial';
   ctx.fillStyle = 'white';
   ctx.fillText('Echo Works', 80, 55);
 
   requestAnimationFrame(draw);
-}
-</script>
-</body>
-</html>
-logo.onload = () => {
-    requestAnimationFrame(draw);
-};
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    t += 0.05;
-
-    // --- Fake "bass pulse" effect ---
-    pulse = Math.sin(t * 2) * 10; // expands/shrinks smoothly
-
-    // --- Wavy hollow ball ---
-    ctx.beginPath();
-    const points = 120;
-    for (let i = 0; i <= points; i++) {
-        const angle = (i / points) * Math.PI * 2;
-        const r = baseRadius + pulse + 20 * Math.sin(5 * angle + t) + 10 * Math.sin(3 * angle - t * 2);
-        const x = canvas.width / 2 + r * Math.cos(angle);
-        const y = canvas.height / 2 + r * Math.sin(angle);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#064040';
-    ctx.shadowBlur = 80;
-    ctx.shadowColor = '#064040';
-    ctx.stroke();
-    ctx.shadowBlur = 80;
-
-    // --- Logo and Name ---
-    ctx.drawImage(logo, 20, 20, 50, 50); // top-left logo
-    ctx.font = '24px Arial';
-    ctx.fillStyle = 'white';
-    ctx.fillText('Echo Works', 80, 55);
-
-    requestAnimationFrame(draw);
 }
 </script>
 </body>
